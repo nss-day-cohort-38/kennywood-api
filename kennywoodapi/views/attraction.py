@@ -19,7 +19,8 @@ class AttractionSerializer(serializers.HyperlinkedModelSerializer):
             view_name='attraction',
             lookup_field='id'
         )
-        fields = ('id', 'url', 'name', 'area_id',)
+        fields = ('id', 'url', 'name', 'area',)
+        depth = 2
 
 class Attractions(ViewSet):
 
