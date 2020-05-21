@@ -54,11 +54,11 @@ class ItineraryItems(ViewSet):
 
     def create(self, request):
 
-        attraction = Attraction.objects.get(pk=request.data["ride_id"])
+        attraction = Attraction.objects.get(pk=request.data["attraction_id"])
         customer = Customer.objects.get(user=request.auth.user)
 
         new_itinerary_item = Itinerary()
-        new_itinerary_item.starttime = request.data["starttime"]
+        new_itinerary_item.starttime = request.data["start_time"]
         new_itinerary_item.customer = customer
         new_itinerary_item.attraction = attraction
 
@@ -75,7 +75,7 @@ class ItineraryItems(ViewSet):
             Response -- Empty body with 204 status code
         """
         itinerary = Itinerary.objects.get(pk=pk)
-        itinerary.starttime = request.data["starttime"]
+        itinerary.starttime = request.data["start_time"]
         attraction = Attraction.objects.get(pk=request.data["attraction_id"])
         itinerary.attraction = attraction
         itinerary.save()
