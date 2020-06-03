@@ -8,6 +8,7 @@ class Itinerary(models.Model):
     attraction = models.ForeignKey(Attraction, on_delete=models.DO_NOTHING)
     customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING)
     starttime = models.IntegerField()
+    image = models.ImageField(upload_to="media/", null=True, blank=True)
 
     class Meta:
         ordering = ("starttime",)

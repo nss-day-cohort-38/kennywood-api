@@ -4,6 +4,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from kennywoodapi.models import Attraction, ParkArea, Itinerary, Customer
 
 
@@ -20,10 +21,11 @@ class ItineraryItemSerializer(serializers.HyperlinkedModelSerializer):
             view_name='itinerary',
             lookup_field='id'
         )
-        fields = ('id', 'url', 'starttime', 'attraction_id', 'attraction',)
-        depth = 2
+        fields = ('id', 'url', 'starttime', 'attraction_id', 'attraction', 'image')
+        depth = 1
 
 class ItineraryItems(ViewSet):
+    parser_classes = (MultiPartParser, FormParser, JSONParser,)
 
     def retrieve(self, request, pk=None):
         """Handle GET requests for a single itinerary item
@@ -52,22 +54,28 @@ class ItineraryItems(ViewSet):
             itineraries, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def create(self, request):
-
-        attraction = Attraction.objects.get(pk=request.data["attraction_id"])
+    def create(self, request, format=None):
+        attraction = Attraction.objects.get(pk=request.data['attraction_id'])
         customer = Customer.objects.get(user=request.auth.user)
 
         new_itinerary_item = Itinerary()
         new_itinerary_item.starttime = request.data["start_time"]
         new_itinerary_item.customer = customer
         new_itinerary_item.attraction = attraction
+        new_itinerary_item.image = request.data['image']
 
         new_itinerary_item.save()
 
         serializer = ItineraryItemSerializer(
             new_itinerary_item, context={'request': request})
-
+        
         return Response(serializer.data)
+        # serializer = ItineraryItemSerializer(data=request.data, context={'request': request})
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data)
+        # else:
+        #     return Response(serializer.errors)
 
     def update(self, request, pk=None):
         """Handle PUT requests for an individual itinerary item
